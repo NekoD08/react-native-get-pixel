@@ -16,6 +16,8 @@ import com.facebook.react.bridge.WritableNativeArray;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
@@ -45,6 +47,106 @@ class RNPixelColorModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             callback.invoke(e.getMessage());
         }
+    }
+
+    @ReactMethod
+    public void getPixelRankofImage(final String imageName, final int x0, final int y0, final int x1, final int y1, final Callback callback) {
+      try {
+        final Bitmap bitmap = loadImage(imageName);
+        final WritableArray result = new WritableNativeArray();
+        int r = 0;
+        int g = 0;
+        int b = 0;
+
+        for(int i = y0; i <= y1; i++) {
+          for(int j = x0; j <= x1; j++) {
+
+            if(j > bitmap.getWidth() - 1 || j < 0 || i > bitmap.getHeight() - 1 || i < 0) {
+              r = 149;
+              g = 193;
+              b = 31;
+            } else {
+              final int pixel = bitmap.getPixel(j, i);
+              r = Color.red(pixel);
+              g = Color.green(pixel);
+              b = Color.blue(pixel);
+            }
+            final WritableArray color = new WritableNativeArray();
+
+            color.pushInt(r);
+            color.pushInt(g);
+            color.pushInt(b);
+            color.pushInt(j);
+            color.pushInt(i);
+            result.pushArray(color);
+          }
+        }
+
+        callback.invoke(null, result);
+
+      } catch (Exception e) {
+        callback.invoke(e.getMessage());
+      }
+    }
+
+    @ReactMethod
+    public void getPixelRankHSVofImage(final String imageName, final int x0, final int y0, final int x1, final int y1, final Callback callback) {
+      try {
+        final Bitmap bitmap = loadImage(imageName);
+        final WritableArray result = new WritableNativeArray();
+
+        for(int i = y0; i <= y1; i++) {
+          for(int j = x0; j <= x1; j++) {
+            final int pixel = bitmap.getPixel(j, i);
+            float[] hsv = new float[3];
+            final WritableArray color = new WritableNativeArray();
+
+            final int r = Color.red(pixel);
+            final int g = Color.green(pixel);
+            final int b = Color.blue(pixel);
+            Color.RGBToHSV(r, g, b, hsv);
+
+            color.pushDouble(hsv[0]);
+            color.pushDouble(hsv[1]);
+            color.pushDouble(hsv[2]);
+            color.pushInt(j);
+            color.pushInt(i);
+            result.pushArray(color);
+          }
+        }
+
+        callback.invoke(null, result);
+
+      } catch(Exception e) {
+        callback.invoke(e.getMessage());
+      }
+    }
+
+    @ReactMethod
+    public void getPixelHSVofImage(final String imageName, final int x, final int y, final Callback callback) {
+      try {
+        final Bitmap bitmap = loadImage(imageName);
+
+        final int pixel = bitmap.getPixel(x, y);
+        float[] hsv = new float[3];
+        final WritableArray color = new WritableNativeArray();
+
+        final int r = Color.red(pixel);
+        final int g = Color.green(pixel);
+        final int b = Color.blue(pixel);
+        Color.RGBToHSV(r, g, b, hsv);
+
+        color.pushDouble(hsv[0]);
+        color.pushDouble(hsv[1]);
+        color.pushDouble(hsv[2]);
+        color.pushInt(x);
+        color.pushInt(y);
+
+        callback.invoke(null, color);
+
+      } catch(Exception e) {
+        callback.invoke(e.getMessage());
+      }
     }
 
     @ReactMethod
@@ -113,6 +215,10 @@ class RNPixelColorModule extends ReactContextBaseJavaModule {
         }
     }
 
+    private void respondRank(final Callback callback, final int pixel) {
+
+    }
+
     private void respondWithPixel(final Callback callback, final int pixel) {
         final int r = Color.red(pixel);
         final int g = Color.green(pixel);
@@ -126,7 +232,7 @@ class RNPixelColorModule extends ReactContextBaseJavaModule {
     }
 
     private Bitmap loadImage(final String imageName) throws IOException {
-        final InputStream inputStream = context.getAssets().open("drawable/" + imageName + ".png");
+        final InputStream inputStream = new BufferedInputStream(new FileInputStream(imageName));
         final Drawable drawable = Drawable.createFromStream(inputStream, null);
         return ((BitmapDrawable) drawable).getBitmap();
     }
