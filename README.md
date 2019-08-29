@@ -23,7 +23,7 @@ getPixelRGBA('sample.png', x, y)
    .catch(err => {});
 ```
 
-**NOTE:** You have to add sample.png to the Xcode project as a resource and to `src/main/assets/drawable` on Android.
+**NOTE:** On iOS you have to add sample.png to the Xcode project as a resource
 
 ## getPixelRank Example (Android only)
 
@@ -36,4 +36,4 @@ getPixelRank(url, x0, y0, x1, y1)
     }).catch(err => {console.log(err);});
 ```
 
-**NOTE** url can be any saved image, send path like this: "/rootFolder/otherFolder/image.jpg" the image could be ".jpg" or ".png"
+**NOTE** On android url can be any saved image, send path like this: "/rootFolder/otherFolder/image.jpg" the image could be ".jpg" or ".png"
