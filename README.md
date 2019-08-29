@@ -24,3 +24,16 @@ getPixelRGBA('sample.png', x, y)
 ```
 
 **NOTE:** You have to add sample.png to the Xcode project as a resource and to `src/main/assets/drawable` on Android.
+
+## getPixelRank Example (Android only)
+
+```javascript
+import { getPixelRank } from 'react-native-get-pixel';
+
+getPixelRank(url, x0, y0, x1, y1)
+    .then(colorArr => {
+      //Do soomethign with colorArray
+    }).catch(err => {console.log(err);});
+```
+
+**NOTE** url can be any saved image, send path like this: "/rootFolder/otherFolder/image.jpg" the image could be ".jpg" or ".png"
